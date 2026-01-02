@@ -16,6 +16,25 @@ const roles = [
   "Vaporix"
 ];
 
+//categories (can add specifics later like ranged dps)
+const roleCategories = {
+  "Deadeye": "DPS",
+  "Taylor": "DPS",
+  "Forge": "DPS",
+  "Aeroblade": "DPS",
+  "Ravage": "DPS",
+  "Scorcher": "DPS",
+  "Guardian": "Tank",
+  "Rimefist": "Tank",
+  "Flamefist": "Tank",
+  "Gaia": "Tank",
+  "Luminra": "Healer",
+  "Reso": "Healer",
+  "Sylora": "Healer",
+  "Razorstrike": "Assassin",
+  "Vaporix": "Assassin"
+};
+
 const input = document.getElementById("playerInput");
 const addBtn = document.getElementById("addPlayerBtn");
 const assignBtn = document.getElementById("assignRolesBtn");
@@ -136,19 +155,30 @@ function assignRoles() {
 }
 
 function assignTeam(teamId) {
-  const team = document.getElementById(teamId + "Drop"); // use dropzone
+  const team = document.getElementById(teamId + "Drop");
   const players = Array.from(team.querySelectorAll(".tag"));
 
-  let availableRoles = [...roles];
+  const categoryOnly = document.getElementById("categoryOnlyCheckbox").checked;
 
-  players.forEach(player => {
-    if (availableRoles.length === 0) return;
-
-    const index = Math.floor(Math.random() * availableRoles.length);
-    const role = availableRoles.splice(index, 1)[0];
-
-    player.querySelector(".role").textContent = `(${role})`;
-  });
+  if (categoryOnly) {
+    // Assign only categories
+    players.forEach(player => {
+      // Pick a random category
+      const categories = ["Healer", "Tank", "DPS", "Assassin"];
+      const index = Math.floor(Math.random() * categories.length);
+      const category = categories[index];
+      player.querySelector(".role").textContent = `(${category})`;
+    });
+  } else {
+    // Original role assignment
+    let availableRoles = [...Object.keys(roleCategories)];
+    players.forEach(player => {
+      if (availableRoles.length === 0) return;
+      const index = Math.floor(Math.random() * availableRoles.length);
+      const role = availableRoles.splice(index, 1)[0];
+      player.querySelector(".role").textContent = `(${role})`;
+    });
+  }
 }
 
 function copyToClipboard() {
@@ -167,14 +197,24 @@ function copyToClipboard() {
 }
 
 function formatTeam(teamId, label) {
-  const team = document.getElementById(teamId + "Drop"); // use dropzone
+  const team = document.getElementById(teamId + "Drop");
   const players = Array.from(team.querySelectorAll(".tag"));
+  const categoryOnly = document.getElementById("categoryOnlyCheckbox").checked;
 
   const formatted = players.map(player => {
     const name = player.querySelector(".name")?.textContent ?? "";
-    const roleText = player.querySelector(".role")?.textContent ?? "";
-    const role = roleText.replace(/[()]/g, "").toLowerCase() || "none";
-    return `${name} - ${role}`;
+    let roleText = player.querySelector(".role")?.textContent ?? "";
+    roleText = roleText.replace(/[()]/g, "");
+
+    if (!categoryOnly && roleText && roleCategories[roleText]) {
+      // If specific role, map to category for copy
+      roleText = roleCategories[roleText].toLowerCase();
+    } else {
+      // Category-only mode or roleText is already category
+      roleText = roleText.toLowerCase() || "none";
+    }
+
+    return `${name} - ${roleText}`;
   });
 
   return `${label}: ${formatted.join(", ")}`;
