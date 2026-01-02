@@ -166,23 +166,34 @@ function assignTeam(teamId) {
   const noDoubleHealer = document.getElementById("noDoubleHealerCheckbox").checked;
 
   if (categoryOnly) {
-    // Assign categories
-    const categories = ["Healer", "Tank", "DPS", "Assassin"];
-    let healerAssigned = false;
+  const pools = getCategoryPools(); // max available per category
+  const assignedCounts = {}; // how many assigned per team
 
-    players.forEach(player => {
-      let assignedCategory;
-      
-      do {
-        const index = Math.floor(Math.random() * categories.length);
-        assignedCategory = categories[index];
-      } while (noDoubleHealer && assignedCategory === "Healer" && healerAssigned);
+  Object.keys(pools).forEach(cat => assignedCounts[cat] = 0);
 
-      if (assignedCategory === "Healer") healerAssigned = true;
-      player.querySelector(".role").textContent = `(${assignedCategory})`;
-    });
+  players.forEach(player => {
+    let availableCategories = Object.keys(pools).filter(cat => assignedCounts[cat] < pools[cat]);
 
-  } else {
+    if (noDoubleHealer) {
+      // remove Healer if already assigned
+      if (assignedCounts["Healer"] > 0) {
+        availableCategories = availableCategories.filter(cat => cat !== "Healer");
+      }
+    }
+
+    if (availableCategories.length === 0) {
+      // fallback if all exhausted
+      availableCategories = Object.keys(pools);
+    }
+
+    const index = Math.floor(Math.random() * availableCategories.length);
+    const assignedCategory = availableCategories[index];
+
+    assignedCounts[assignedCategory]++;
+    player.querySelector(".role").textContent = `(${assignedCategory})`;
+  });
+  
+} else {
     // Original role assignment
     let availableRoles = [...Object.keys(roleCategories)];
 
@@ -328,5 +339,16 @@ function swapTeams() {
 
   attackerPlayers.forEach(player => defendersDrop.appendChild(player));
   defenderPlayers.forEach(player => attackersDrop.appendChild(player));
+}
+
+// function to get the number of roles in each category, that way it can't assign 3 tanks to a team if there are only 2 total in-game
+function getCategoryPools() {
+  // Count how many roles exist per category
+  const pools = {};
+  Object.values(roleCategories).forEach(cat => {
+    if (!pools[cat]) pools[cat] = 0;
+    pools[cat]++;
+  });
+  return pools; // e.g., { DPS: 6, Tank: 4, Healer: 3, Assassin: 2 }
 }
 
