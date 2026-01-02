@@ -23,3 +23,63 @@
   background-color: #ffe8a1;
   border-color: #e0a800;
 }
+
+.tag {
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* left-align name+role */
+  cursor: grab;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.tag:active {
+  cursor: grabbing;
+  transform: scale(1.02);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Name text */
+.tag .name {
+  font-weight: 500;
+}
+
+/* Role text - closer to name */
+.tag .role {
+  font-style: italic;
+  color: #555;
+  margin-left: 10px; /* space between name and role */
+}
+
+.tag .delete-box {
+  margin-left: auto;       
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;            /* bigger clickable area */
+  height: 32px;           /* bigger clickable area */
+  padding: 4px;           /* extra space inside */
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #ffe6e6; 
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.tag .delete-box:hover {
+  background-color: #ffcccc;
+  transform: scale(1.1);  /* subtle hover grow */
+}
+
+.tag .delete {
+  color: #ff4d4f;
+  font-weight: bold;
+  line-height: 1;
+  user-select: none;
+}
+
+
+

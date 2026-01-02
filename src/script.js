@@ -66,7 +66,7 @@ document.querySelectorAll(".dropzone").forEach(zone => {
         const roleSpan = draggedTag.querySelector(".role");
         if (roleSpan) roleSpan.textContent = "";
       }
-      
+
       draggedTag = null;
     }
   });
@@ -87,19 +87,32 @@ function addPlayer() {
   tag.className = "tag";
   tag.draggable = true;
 
-  tag.innerHTML = `
-    <span class="name">${name}</span>
-    <span class="role"></span>
-    <span class="delete">✖</span>
-  `;
+    tag.innerHTML = `
+    <span class="drag-handle">
+        <span class="name">${name}</span>
+        <span class="role"></span>
+    </span>
+    <span class="delete-box">✖</span>
+    `;
 
-  tag.addEventListener("dragstart", () => draggedTag = tag);
-
-  tag.querySelector(".delete").addEventListener("click", () => {
-    tag.remove();
-  });
-
+  // Append first
   document.getElementById("participantsDrop").appendChild(tag);
+
+  // Drag start, ignore delete box
+    tag.addEventListener("dragstart", (e) => {
+    if (e.target.closest(".delete-box")) {
+        e.preventDefault(); // clicking delete does not start drag
+        return;
+    }
+    draggedTag = tag;
+    });
+
+  // Delete listener on the delete-box
+    const deleteBox = tag.querySelector(".delete-box");
+    deleteBox.addEventListener("click", (e) => {
+    e.stopPropagation(); // prevent drag
+    tag.remove();
+    });
 
   input.value = "";
   input.focus();
