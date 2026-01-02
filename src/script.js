@@ -141,10 +141,16 @@ function addPlayer() {
      MOBILE TOUCH DRAG
   -------------------------- */
   tag.addEventListener("touchstart", (e) => {
+  // If touching the delete button, do NOT start dragging
+    if (e.target.closest(".delete-box")) {
+      return; // allow normal tap -> click
+    }
+
     draggedTag = tag;
     tag.classList.add("dragging");
     tag.style.zIndex = 1000;
-    e.preventDefault(); // prevent scrolling
+
+    e.preventDefault(); // prevent scrolling only when dragging
   });
 
   tag.addEventListener("touchmove", (e) => {
