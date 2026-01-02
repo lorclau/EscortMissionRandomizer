@@ -16,12 +16,16 @@ const addBtn = document.getElementById("addPlayerBtn");
 const assignBtn = document.getElementById("assignRolesBtn");
 const copyBtn = document.getElementById("copyBtn");
 const randomizeBtn = document.getElementById("randomizeTeamsBtn");
+const swapBtn = document.getElementById("swapTeamsBtn");
 
 let draggedTag = null;
 
 /* -------------------------
    EVENT LISTENERS
 -------------------------- */
+
+// Swap teams, preserves participants list
+swapBtn.addEventListener("click", swapTeams);
 
 // Randomize teams
 randomizeBtn.addEventListener("click", randomizeTeams);
@@ -163,5 +167,16 @@ function shuffleArray(array) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
   }
+}
+
+function swapTeams() {
+  const attackers = document.getElementById("attackers");
+  const defenders = document.getElementById("defenders");
+
+  const attackerPlayers = Array.from(attackers.querySelectorAll(".tag"));
+  const defenderPlayers = Array.from(defenders.querySelectorAll(".tag"));
+
+  attackerPlayers.forEach(player => defenders.appendChild(player));
+  defenderPlayers.forEach(player => attackers.appendChild(player));
 }
 
