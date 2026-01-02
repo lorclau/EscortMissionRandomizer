@@ -208,8 +208,86 @@ function dropTag(e) {
 }
 
 function assignRoles() {
-  assignTeam("attackers");
-  assignTeam("defenders");
+  const identicalTeams = document.getElementById("identicalTeamsCheckbox").checked;
+
+  if (identicalTeams) {
+    // Assign roles to attackers first
+    const attackers = Array.from(document.getElementById("attackersDrop").querySelectorAll(".tag"));
+    const rolesAssigned = assignRolesToPlayers(attackers);
+
+    // Assign the same roles/categories to defenders
+    const defenders = Array.from(document.getElementById("defendersDrop").querySelectorAll(".tag"));
+    // Shuffle roles so defenders don’t get exact same order
+    const rolesCopy = [...rolesAssigned];
+    shuffleArray(rolesCopy);
+
+    defenders.forEach((player, index) => {
+      player.querySelector(".role").textContent = rolesCopy[index] || "";
+    });
+
+  } else {
+    // Normal assignment
+    assignTeam("attackers");
+    assignTeam("defenders");
+  }
+}
+
+// Helper function to assign roles to list of players (for assign roles)
+function assignRolesToPlayers(players) {
+  const categoryOnly = document.getElementById("categoryOnlyCheckbox").checked;
+  const noDoubleHealer = document.getElementById("noDoubleHealerCheckbox").checked;
+
+  const assignedRoles = [];
+
+  if (categoryOnly) {
+    const pools = getCategoryPools(); // max available per category
+    const assignedCounts = {};
+    Object.keys(pools).forEach(cat => assignedCounts[cat] = 0);
+
+    players.forEach(player => {
+      let availableCategories = Object.keys(pools).filter(cat => assignedCounts[cat] < pools[cat]);
+
+      if (noDoubleHealer && assignedCounts["Healer"] > 0) {
+        availableCategories = availableCategories.filter(cat => cat !== "Healer");
+      }
+
+      if (availableCategories.length === 0) availableCategories = Object.keys(pools);
+
+      const index = Math.floor(Math.random() * availableCategories.length);
+      const assignedCategory = availableCategories[index];
+      assignedCounts[assignedCategory]++;
+
+      player.querySelector(".role").textContent = `(${assignedCategory})`;
+      assignedRoles.push(`(${assignedCategory})`);
+    });
+
+  } else {
+    let availableRoles = [...Object.keys(roleCategories)];
+    let healerAssigned = false;
+
+    players.forEach(player => {
+      if (availableRoles.length === 0) return;
+
+      let index = Math.floor(Math.random() * availableRoles.length);
+      let role = availableRoles[index];
+
+      if (roleCategories[role] === "Healer" && noDoubleHealer && healerAssigned) {
+        const nonHealerIndex = availableRoles.findIndex(r => roleCategories[r] !== "Healer");
+        if (nonHealerIndex !== -1) {
+          index = nonHealerIndex;
+          role = availableRoles[index];
+        }
+      }
+
+      if (roleCategories[role] === "Healer") healerAssigned = true;
+
+      availableRoles.splice(index, 1); // remove assigned
+      player.querySelector(".role").textContent = `(${role})`;
+      assignedRoles.push(`(${role})`);
+    });
+  }
+
+  return assignedRoles;
 }
 
 function assignTeam(teamId) {
