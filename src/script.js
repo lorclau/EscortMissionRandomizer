@@ -41,12 +41,16 @@ const assignBtn = document.getElementById("assignRolesBtn");
 const copyBtn = document.getElementById("copyBtn");
 const randomizeBtn = document.getElementById("randomizeTeamsBtn");
 const swapBtn = document.getElementById("swapTeamsBtn");
+const remixBtn = document.getElementById("remixTeamsBtn");
 
 let draggedTag = null;
 
 /* -------------------------
    EVENT LISTENERS
 -------------------------- */
+
+// Remix teams, randomizes players already assigned to teams (not participants)
+remixBtn.addEventListener("click", remixTeams);
 
 // Swap teams, preserves participants list
 swapBtn.addEventListener("click", swapTeams);
@@ -276,6 +280,35 @@ function randomizeTeams() {
     }
     });
 
+}
+
+function remixTeams() {
+  const attackersDrop = document.getElementById("attackersDrop");
+  const defendersDrop = document.getElementById("defendersDrop");
+
+  // Collect all players currently in attackers and defenders
+  const allPlayers = [
+    ...Array.from(attackersDrop.querySelectorAll(".tag")),
+    ...Array.from(defendersDrop.querySelectorAll(".tag"))
+  ];
+
+  if (allPlayers.length === 0) return;
+
+  // Shuffle them
+  shuffleArray(allPlayers);
+
+  // Clear current drop zones
+  attackersDrop.innerHTML = "";
+  defendersDrop.innerHTML = "";
+
+  // Reassign alternately to attackers and defenders
+  allPlayers.forEach((player, index) => {
+    if (index % 2 === 0) {
+      attackersDrop.appendChild(player);
+    } else {
+      defendersDrop.appendChild(player);
+    }
+  });
 }
 
 // Fisher–Yates shuffle
