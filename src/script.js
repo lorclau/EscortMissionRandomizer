@@ -143,22 +143,30 @@ function addPlayer() {
   tag.addEventListener("touchstart", (e) => {
     draggedTag = tag;
     tag.classList.add("dragging");
-    e.preventDefault(); // prevent page scrolling
+    tag.style.zIndex = 1000;
+    e.preventDefault(); // prevent scrolling
   });
 
   tag.addEventListener("touchmove", (e) => {
     if (!draggedTag) return;
     const touch = e.touches[0];
+    const parentRect = tag.parentElement.getBoundingClientRect();
+
     tag.style.position = "absolute";
-    tag.style.left = touch.clientX - tag.offsetWidth / 2 + "px";
-    tag.style.top = touch.clientY - tag.offsetHeight / 2 + "px";
+    tag.style.left = touch.clientX - parentRect.left - tag.offsetWidth / 2 + "px";
+    tag.style.top = touch.clientY - parentRect.top - tag.offsetHeight / 2 + "px";
+
     e.preventDefault();
   });
 
   tag.addEventListener("touchend", (e) => {
     if (!draggedTag) return;
     const touch = e.changedTouches[0];
+
+    // Temporarily hide dragged element so elementFromPoint detects underlying dropzone
+    draggedTag.style.display = "none";
     const dropZone = document.elementFromPoint(touch.clientX, touch.clientY)?.closest(".dropzone");
+    draggedTag.style.display = "";
 
     if (dropZone) {
       dropZone.appendChild(draggedTag);
@@ -174,6 +182,7 @@ function addPlayer() {
     draggedTag.style.position = "";
     draggedTag.style.left = "";
     draggedTag.style.top = "";
+    draggedTag.style.zIndex = "";
     draggedTag.classList.remove("dragging");
     draggedTag = null;
   });
