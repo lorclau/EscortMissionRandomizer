@@ -159,25 +159,61 @@ function assignTeam(teamId) {
   const players = Array.from(team.querySelectorAll(".tag"));
 
   const categoryOnly = document.getElementById("categoryOnlyCheckbox").checked;
+  const noDoubleHealer = document.getElementById("noDoubleHealerCheckbox").checked;
 
   if (categoryOnly) {
-    // Assign only categories
+    // Assign categories
+    const categories = ["Healer", "Tank", "DPS", "Assassin"];
+    let healerAssigned = false;
+
     players.forEach(player => {
-      // Pick a random category
-      const categories = ["Healer", "Tank", "DPS", "Assassin"];
-      const index = Math.floor(Math.random() * categories.length);
-      const category = categories[index];
-      player.querySelector(".role").textContent = `(${category})`;
+      let assignedCategory;
+      
+      do {
+        const index = Math.floor(Math.random() * categories.length);
+        assignedCategory = categories[index];
+      } while (noDoubleHealer && assignedCategory === "Healer" && healerAssigned);
+
+      if (assignedCategory === "Healer") healerAssigned = true;
+      player.querySelector(".role").textContent = `(${assignedCategory})`;
     });
+
   } else {
     // Original role assignment
     let availableRoles = [...Object.keys(roleCategories)];
-    players.forEach(player => {
-      if (availableRoles.length === 0) return;
-      const index = Math.floor(Math.random() * availableRoles.length);
-      const role = availableRoles.splice(index, 1)[0];
-      player.querySelector(".role").textContent = `(${role})`;
-    });
+
+    if (noDoubleHealer) {
+      // Remove extra healers after first assigned
+      let healerAssigned = false;
+      players.forEach(player => {
+        if (availableRoles.length === 0) return;
+
+        let index = Math.floor(Math.random() * availableRoles.length);
+        let role = availableRoles[index];
+
+        // If healer already assigned, skip any other healer
+        if (roleCategories[role] === "Healer" && healerAssigned) {
+          // find first non-healer role
+          const nonHealerIndex = availableRoles.findIndex(r => roleCategories[r] !== "Healer");
+          if (nonHealerIndex !== -1) {
+            index = nonHealerIndex;
+            role = availableRoles[index];
+          }
+        }
+
+        if (roleCategories[role] === "Healer") healerAssigned = true;
+
+        availableRoles.splice(index, 1); // remove assigned role
+        player.querySelector(".role").textContent = `(${role})`;
+      });
+    } else {
+      players.forEach(player => {
+        if (availableRoles.length === 0) return;
+        const index = Math.floor(Math.random() * availableRoles.length);
+        const role = availableRoles.splice(index, 1)[0];
+        player.querySelector(".role").textContent = `(${role})`;
+      });
+    }
   }
 }
 
