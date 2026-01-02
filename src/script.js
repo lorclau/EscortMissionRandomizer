@@ -44,11 +44,27 @@ input.addEventListener("keydown", (e) => {
   }
 });
 
-// Enable dropping on columns
-document.querySelectorAll(".column").forEach(column => {
-  column.addEventListener("dragover", e => e.preventDefault());
-  column.addEventListener("drop", dropTag);
+// Enable dropping on column dropzones
+document.querySelectorAll(".dropzone").forEach(zone => {
+  zone.addEventListener("dragover", e => {
+    e.preventDefault();
+    zone.classList.add("drag-over");
+  });
+
+  zone.addEventListener("dragleave", () => {
+    zone.classList.remove("drag-over");
+  });
+
+  zone.addEventListener("drop", e => {
+    e.preventDefault();
+    zone.classList.remove("drag-over");
+    if (draggedTag) {
+      zone.appendChild(draggedTag);
+      draggedTag = null;
+    }
+  });
 });
+
 
 // Assign roles
 assignBtn.addEventListener("click", assignRoles);
@@ -77,7 +93,7 @@ function addPlayer() {
     tag.remove();
   });
 
-  document.getElementById("participants").appendChild(tag);
+  document.getElementById("participantsDrop").appendChild(tag);
 
   input.value = "";
   input.focus();
@@ -96,7 +112,7 @@ function assignRoles() {
 }
 
 function assignTeam(teamId) {
-  const team = document.getElementById(teamId);
+  const team = document.getElementById(teamId + "Drop"); // use dropzone
   const players = Array.from(team.querySelectorAll(".tag"));
 
   let availableRoles = [...roles];
@@ -127,7 +143,7 @@ function copyToClipboard() {
 }
 
 function formatTeam(teamId, label) {
-  const team = document.getElementById(teamId);
+  const team = document.getElementById(teamId + "Drop"); // use dropzone
   const players = Array.from(team.querySelectorAll(".tag"));
 
   const formatted = players.map(player => {
@@ -142,23 +158,24 @@ function formatTeam(teamId, label) {
 
 function randomizeTeams() {
   const participants = Array.from(
-    document.getElementById("participants").querySelectorAll(".tag")
+    document.getElementById("participantsDrop").querySelectorAll(".tag")
   );
 
   if (participants.length === 0) return;
 
   shuffleArray(participants);
 
-  const attackers = document.getElementById("attackers");
-  const defenders = document.getElementById("defenders");
+  const attackersDrop = document.getElementById("attackersDrop");
+  const defendersDrop = document.getElementById("defendersDrop");
 
   participants.forEach((player, index) => {
     if (index % 2 === 0) {
-      attackers.appendChild(player);
+        attackersDrop.appendChild(player);
     } else {
-      defenders.appendChild(player);
+        defendersDrop.appendChild(player);
     }
-  });
+    });
+
 }
 
 // Fisher–Yates shuffle
@@ -170,13 +187,13 @@ function shuffleArray(array) {
 }
 
 function swapTeams() {
-  const attackers = document.getElementById("attackers");
-  const defenders = document.getElementById("defenders");
+  const attackersDrop = document.getElementById("attackersDrop");
+  const defendersDrop = document.getElementById("defendersDrop");
 
-  const attackerPlayers = Array.from(attackers.querySelectorAll(".tag"));
-  const defenderPlayers = Array.from(defenders.querySelectorAll(".tag"));
+  const attackerPlayers = Array.from(attackersDrop.querySelectorAll(".tag"));
+  const defenderPlayers = Array.from(defendersDrop.querySelectorAll(".tag"));
 
-  attackerPlayers.forEach(player => defenders.appendChild(player));
-  defenderPlayers.forEach(player => attackers.appendChild(player));
+  attackerPlayers.forEach(player => defendersDrop.appendChild(player));
+  defenderPlayers.forEach(player => attackersDrop.appendChild(player));
 }
 
