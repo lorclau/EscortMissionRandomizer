@@ -244,14 +244,14 @@ function formatTeam(teamId, label) {
   const formatted = players.map(player => {
     const name = player.querySelector(".name")?.textContent ?? "";
     let roleText = player.querySelector(".role")?.textContent ?? "";
-    roleText = roleText.replace(/[()]/g, "");
+    roleText = roleText.replace(/[()]/g, ""); // remove parentheses
 
-    if (!categoryOnly && roleText && roleCategories[roleText]) {
-      // If specific role, map to category for copy
-      roleText = roleCategories[roleText].toLowerCase();
-    } else {
-      // Category-only mode or roleText is already category
+    if (categoryOnly) {
+      // Use category only
       roleText = roleText.toLowerCase() || "none";
+    } else {
+      // Keep the actual role name, not category
+      roleText = roleText || "none";
     }
 
     return `${name} - ${roleText}`;
