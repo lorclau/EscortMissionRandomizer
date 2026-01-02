@@ -15,12 +15,16 @@ const input = document.getElementById("playerInput");
 const addBtn = document.getElementById("addPlayerBtn");
 const assignBtn = document.getElementById("assignRolesBtn");
 const copyBtn = document.getElementById("copyBtn");
+const randomizeBtn = document.getElementById("randomizeTeamsBtn");
 
 let draggedTag = null;
 
 /* -------------------------
    EVENT LISTENERS
 -------------------------- */
+
+// Randomize teams
+randomizeBtn.addEventListener("click", randomizeTeams);
 
 // Copy names and roles to clipboard
 copyBtn.addEventListener("click", copyToClipboard);
@@ -125,9 +129,39 @@ function formatTeam(teamId, label) {
   const formatted = players.map(player => {
     const name = player.querySelector(".name")?.textContent ?? "";
     const roleText = player.querySelector(".role")?.textContent ?? "";
-    const role = roleText.replace(/[()]/g, "").toLowerCase() || "no-role";
+    const role = roleText.replace(/[()]/g, "").toLowerCase() || "none";
     return `${name} - ${role}`;
   });
 
   return `${label}: ${formatted.join(", ")}`;
 }
+
+function randomizeTeams() {
+  const participants = Array.from(
+    document.getElementById("participants").querySelectorAll(".tag")
+  );
+
+  if (participants.length === 0) return;
+
+  shuffleArray(participants);
+
+  const attackers = document.getElementById("attackers");
+  const defenders = document.getElementById("defenders");
+
+  participants.forEach((player, index) => {
+    if (index % 2 === 0) {
+      attackers.appendChild(player);
+    } else {
+      defenders.appendChild(player);
+    }
+  });
+}
+
+// Fisher–Yates shuffle
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
