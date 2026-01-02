@@ -60,11 +60,17 @@ document.querySelectorAll(".dropzone").forEach(zone => {
     zone.classList.remove("drag-over");
     if (draggedTag) {
       zone.appendChild(draggedTag);
+
+      // Clear role if dropped in participants (optional)
+      if (zone.id === "participantsDrop") {
+        const roleSpan = draggedTag.querySelector(".role");
+        if (roleSpan) roleSpan.textContent = "";
+      }
+      
       draggedTag = null;
     }
   });
 });
-
 
 // Assign roles
 assignBtn.addEventListener("click", assignRoles);
