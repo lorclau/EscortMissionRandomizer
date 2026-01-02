@@ -52,7 +52,7 @@
 .tag .role {
   font-style: italic;
   color: #555;
-  margin-left: 10px; /* space between name and role */
+  margin-left: 8px; /* space between name and role */
 }
 
 .tag .delete-box {

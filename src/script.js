@@ -1,14 +1,19 @@
 const roles = [
-  "Tank",
-  "Healer",
-  "DPS",
-  "Support",
-  "Sniper",
-  "Scout",
-  "Bruiser",
-  "Controller",
-  "Engineer",
-  "Flex"
+  "Deadeye",
+  "Taylor",
+  "Forge",
+  "Aeroblade",
+  "Ravage",
+  "Scorcher",
+  "Guardian",
+  "Rimefist",
+  "Flamefist",
+  "Gaia",
+  "Luminra",
+  "Reso",
+  "Sylora",
+  "Razorstrike",
+  "Vaporix"
 ];
 
 const input = document.getElementById("playerInput");
