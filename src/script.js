@@ -115,32 +115,77 @@ function addPlayer() {
   tag.className = "tag";
   tag.draggable = true;
 
-    tag.innerHTML = `
+  tag.innerHTML = `
     <span class="drag-handle">
         <span class="name">${name}</span>
         <span class="role"></span>
     </span>
     <span class="delete-box">✖</span>
-    `;
+  `;
 
-  // Append first
+  // Append to participants
   document.getElementById("participantsDrop").appendChild(tag);
 
-  // Drag start, ignore delete box
-    tag.addEventListener("dragstart", (e) => {
+  /* -------------------------
+     DESKTOP DRAG
+  -------------------------- */
+  tag.addEventListener("dragstart", (e) => {
     if (e.target.closest(".delete-box")) {
-        e.preventDefault(); // clicking delete does not start drag
-        return;
+      e.preventDefault(); // clicking delete does not start drag
+      return;
     }
     draggedTag = tag;
-    });
+  });
 
-  // Delete listener on the delete-box
-    const deleteBox = tag.querySelector(".delete-box");
-    deleteBox.addEventListener("click", (e) => {
+  /* -------------------------
+     MOBILE TOUCH DRAG
+  -------------------------- */
+  tag.addEventListener("touchstart", (e) => {
+    draggedTag = tag;
+    tag.classList.add("dragging");
+    e.preventDefault(); // prevent page scrolling
+  });
+
+  tag.addEventListener("touchmove", (e) => {
+    if (!draggedTag) return;
+    const touch = e.touches[0];
+    tag.style.position = "absolute";
+    tag.style.left = touch.clientX - tag.offsetWidth / 2 + "px";
+    tag.style.top = touch.clientY - tag.offsetHeight / 2 + "px";
+    e.preventDefault();
+  });
+
+  tag.addEventListener("touchend", (e) => {
+    if (!draggedTag) return;
+    const touch = e.changedTouches[0];
+    const dropZone = document.elementFromPoint(touch.clientX, touch.clientY)?.closest(".dropzone");
+
+    if (dropZone) {
+      dropZone.appendChild(draggedTag);
+
+      // Optional: clear role if dropped in participants
+      if (dropZone.id === "participantsDrop") {
+        const roleSpan = draggedTag.querySelector(".role");
+        if (roleSpan) roleSpan.textContent = "";
+      }
+    }
+
+    // Reset styles
+    draggedTag.style.position = "";
+    draggedTag.style.left = "";
+    draggedTag.style.top = "";
+    draggedTag.classList.remove("dragging");
+    draggedTag = null;
+  });
+
+  /* -------------------------
+     DELETE BUTTON
+  -------------------------- */
+  const deleteBox = tag.querySelector(".delete-box");
+  deleteBox.addEventListener("click", (e) => {
     e.stopPropagation(); // prevent drag
     tag.remove();
-    });
+  });
 
   input.value = "";
   input.focus();
