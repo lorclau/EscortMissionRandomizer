@@ -7,7 +7,11 @@
 </head>
 <body>
 
+  <div class="header">
   <h2>Escort Mission Role Assignment</h2>
+  <!-- Help Button -->
+  <button id="helpBtn" class="help-btn" title="Instructions">?</button>
+  </div>
 
   <div class="controls">
     <input
@@ -51,6 +55,35 @@
     <h3>Defenders</h3>
     <div class="dropzone" id="defendersDrop"></div>
     <button id="remixTeamsBtn">Remix Teams</button>
+  </div>
+</div>
+
+<!-- Help Modal -->
+<div id="helpModal" class="modal hidden">
+  <div class="modal-content">
+    <button class="modal-close" id="closeHelpBtn">✖</button>
+    <h2>Instructions</h2>
+    
+    <p>Follow these steps to manage your teams:</p>
+
+    <ul class="instructions-list">
+      <li><span class="instr-btn">Add Players</span> – Press ENTER or [Add Players] to add players to Participants list.</li>
+      <li><span class="instr-btn">Drag & Drop</span> – Freely drag and drop players into Participants/Attackers/Defenders.</li>
+      <li><span class="instr-btn">Randomize Participants</span> – Shuffles all participants into teams randomly.</li>
+      <li><span class="instr-btn">Assign Roles</span> – Randomly assigns roles to players in each team.</li>
+      <li><span class="instr-btn">Swap Teams</span> – Swaps Attackers and Defenders.</li>
+      <li><span class="instr-btn">Remix Teams</span> – Re-shuffles players already in Attackers/Defenders, keeping any role assignments.</li>
+      <li><span class="instr-btn">Copy</span> – Copies the current teams and roles to your clipboard.</li>
+    </ul>
+
+    <p>Checkbox options:</p>
+    <ul class="instructions-list">
+      <li><span class="instr-btn">Assign Categories Only</span> – Assigns only the category (DPS, Healer, Tank, Assassin) instead of specific roles.</li>
+      <li><span class="instr-btn">No Double Healer</span> – Prevents more than one Healer per team.</li>
+      <li><span class="instr-btn">Identical Team Comp</span> – Makes both teams have the same role composition.</li>
+    </ul>
+
+    <p>Tip: Click outside the box or press ESC to close the instructions.</p>
   </div>
 </div>
 

@@ -510,3 +510,33 @@ function getCategoryPools() {
   return pools; // e.g., { DPS: 6, Tank: 4, Healer: 3, Assassin: 2 }
 }
 
+//_________________________ Help Button _____________________________________
+
+const helpBtn = document.getElementById("helpBtn");
+const helpModal = document.getElementById("helpModal");
+const closeHelpBtn = document.getElementById("closeHelpBtn");
+
+// Open popup
+helpBtn.addEventListener("click", () => {
+  helpModal.classList.remove("hidden");
+});
+
+// Close popup (X button)
+closeHelpBtn.addEventListener("click", () => {
+  helpModal.classList.add("hidden");
+});
+
+// Close popup when clicking outside the box
+helpModal.addEventListener("click", (e) => {
+  if (e.target === helpModal) {
+    helpModal.classList.add("hidden");
+  }
+});
+
+// Optional: close with ESC key
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    helpModal.classList.add("hidden");
+  }
+});
+
