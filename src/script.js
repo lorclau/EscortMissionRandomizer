@@ -392,16 +392,11 @@ function formatTeam(teamId, label) {
 
   const formatted = players.map(player => {
     const name = player.querySelector(".name")?.textContent ?? "";
-    let roleText = player.querySelector(".role")?.textContent ?? "";
-    roleText = roleText.replace(/[()]/g, ""); // remove parentheses
+    let roleText = player.querySelector(".role")?.textContent.trim() ?? "";
 
-    if (categoryOnly) {
-      // Use category only
-      roleText = roleText.toLowerCase() || "none";
-    } else {
-      // Keep the actual role name, not category
-      roleText = roleText || "none";
-    }
+    if (!roleText) return name;
+
+    roleText = roleText.replace(/[()]/g, "");
 
     return `${name} - ${roleText}`;
   });
@@ -410,25 +405,50 @@ function formatTeam(teamId, label) {
 }
 
 function randomizeTeams() {
-  const participants = Array.from(
-    document.getElementById("participantsDrop").querySelectorAll(".tag")
-  );
+  const participantsDrop = document.getElementById("participantsDrop");
+  const participants = Array.from(participantsDrop.querySelectorAll(".tag"));
 
   if (participants.length === 0) return;
-
-  shuffleArray(participants);
 
   const attackersDrop = document.getElementById("attackersDrop");
   const defendersDrop = document.getElementById("defendersDrop");
 
-  participants.forEach((player, index) => {
-    if (index % 2 === 0) {
-        attackersDrop.appendChild(player);
-    } else {
-        defendersDrop.appendChild(player);
-    }
-    });
+  const MAX_TEAM_SIZE = 4;
 
+  const attackersCount = attackersDrop.children.length;
+  const defendersCount = defendersDrop.children.length;
+
+  // Teams are full — show message and exit
+  if (attackersCount >= MAX_TEAM_SIZE && defendersCount >= MAX_TEAM_SIZE) {
+    alert("Teams are full. Drag-and-drop players to free up space.");
+    return;
+  }
+
+  shuffleArray(participants);
+
+  let aCount = attackersCount;
+  let dCount = defendersCount;
+
+  participants.forEach(player => {
+    const attackersFull = aCount >= MAX_TEAM_SIZE;
+    const defendersFull = dCount >= MAX_TEAM_SIZE;
+
+    if (!attackersFull && !defendersFull) {
+      if (Math.random() < 0.5) {
+        attackersDrop.appendChild(player);
+        aCount++;
+      } else {
+        defendersDrop.appendChild(player);
+        dCount++;
+      }
+    } else if (!attackersFull) {
+      attackersDrop.appendChild(player);
+      aCount++;
+    } else if (!defendersFull) {
+      defendersDrop.appendChild(player);
+      dCount++;
+    }
+  });
 }
 
 function remixTeams() {
