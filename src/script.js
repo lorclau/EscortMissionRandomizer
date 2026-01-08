@@ -35,6 +35,7 @@ const roleCategories = {
   "Vaporix": "Assassin"
 };
 
+// Role icons
 const roleIcons = {
   "Deadeye": "icons/dps.png",
   "Taylor": "icons/dps.png",
