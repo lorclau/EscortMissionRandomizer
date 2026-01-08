@@ -35,6 +35,56 @@ const roleCategories = {
   "Vaporix": "Assassin"
 };
 
+const roleIcons = {
+  "Deadeye": "icons/dps.png",
+  "Taylor": "icons/dps.png",
+  "Forge": "icons/dps.png",
+  "Aeroblade": "icons/dps.png",
+  "Ravage": "icons/dps.png",
+  "Scorcher": "icons/dps.png",
+  "Guardian": "icons/tank.png",
+  "Rimefist": "icons/tank.png",
+  "Flamefist": "icons/tank.png",
+  "Gaia": "icons/tank.png",
+  "Luminra": "icons/healer.png",
+  "Reso": "icons/healer.png",
+  "Sylora": "icons/healer.png",
+  "Razorstrike": "icons/assassin.png",
+  "Vaporix": "icons/assassin.png",
+
+  // Optional: category icons
+  "DPS": "icons/dps.png",
+  "Tank": "icons/tank.png",
+  "Healer": "icons/healer.png",
+  "Assassin": "icons/assassin.png"
+};
+
+/*
+const roleIcons = {
+  "Deadeye": "icons/deadeye.png",
+  "Taylor": "icons/taylor.png",
+  "Forge": "icons/forge.png",
+  "Aeroblade": "icons/aeroblade.png",
+  "Ravage": "icons/ravage.png",
+  "Scorcher": "icons/scorcher.png",
+  "Guardian": "icons/guardian.png",
+  "Rimefist": "icons/rimefist.png",
+  "Flamefist": "icons/flamefist.png",
+  "Gaia": "icons/gaia.png",
+  "Luminra": "icons/luminra.png",
+  "Reso": "icons/reso.png",
+  "Sylora": "icons/sylora.png",
+  "Razorstrike": "icons/razorstrike.png",
+  "Vaporix": "icons/vaporix.png",
+
+  // Optional: category icons
+  "DPS": "icons/dps.png",
+  "Tank": "icons/tank.png",
+  "Healer": "icons/healer.png",
+  "Assassin": "icons/assassin.png"
+};
+*/
+
 const input = document.getElementById("playerInput");
 const addBtn = document.getElementById("addPlayerBtn");
 const assignBtn = document.getElementById("assignRolesBtn");
@@ -282,8 +332,8 @@ function assignRolesToPlayers(players) {
       const assignedCategory = availableCategories[index];
       assignedCounts[assignedCategory]++;
 
-      player.querySelector(".role").textContent = `(${assignedCategory})`;
-      assignedRoles.push(`(${assignedCategory})`);
+      setRoleIcon(player, assignedCategory);
+      assignedRoles.push(assignedCategory);
     });
 
   } else {
@@ -307,8 +357,8 @@ function assignRolesToPlayers(players) {
       if (roleCategories[role] === "Healer") healerAssigned = true;
 
       availableRoles.splice(index, 1); // remove assigned
-      player.querySelector(".role").textContent = `(${role})`;
-      assignedRoles.push(`(${role})`);
+      setRoleIcon(player, role);
+      assignedRoles.push(role);
     });
   }
 
@@ -323,69 +373,49 @@ function assignTeam(teamId) {
   const noDoubleHealer = document.getElementById("noDoubleHealerCheckbox").checked;
 
   if (categoryOnly) {
-  const pools = getCategoryPools(); // max available per category
-  const assignedCounts = {}; // how many assigned per team
+    const pools = getCategoryPools();
+    const assignedCounts = {};
+    Object.keys(pools).forEach(cat => assignedCounts[cat] = 0);
 
-  Object.keys(pools).forEach(cat => assignedCounts[cat] = 0);
+    players.forEach(player => {
+      let availableCategories = Object.keys(pools).filter(cat => assignedCounts[cat] < pools[cat]);
 
-  players.forEach(player => {
-    let availableCategories = Object.keys(pools).filter(cat => assignedCounts[cat] < pools[cat]);
-
-    if (noDoubleHealer) {
-      // remove Healer if already assigned
-      if (assignedCounts["Healer"] > 0) {
+      if (noDoubleHealer && assignedCounts["Healer"] > 0) {
         availableCategories = availableCategories.filter(cat => cat !== "Healer");
       }
-    }
 
-    if (availableCategories.length === 0) {
-      // fallback if all exhausted
-      availableCategories = Object.keys(pools);
-    }
+      if (availableCategories.length === 0) availableCategories = Object.keys(pools);
 
-    const index = Math.floor(Math.random() * availableCategories.length);
-    const assignedCategory = availableCategories[index];
+      const index = Math.floor(Math.random() * availableCategories.length);
+      const assignedCategory = availableCategories[index];
+      assignedCounts[assignedCategory]++;
 
-    assignedCounts[assignedCategory]++;
-    player.querySelector(".role").textContent = `(${assignedCategory})`;
-  });
-  
-} else {
-    // Original role assignment
+      setRoleIcon(player, assignedCategory);
+    });
+
+  } else {
     let availableRoles = [...Object.keys(roleCategories)];
+    let healerAssigned = false;
 
-    if (noDoubleHealer) {
-      // Remove extra healers after first assigned
-      let healerAssigned = false;
-      players.forEach(player => {
-        if (availableRoles.length === 0) return;
+    players.forEach(player => {
+      if (availableRoles.length === 0) return;
 
-        let index = Math.floor(Math.random() * availableRoles.length);
-        let role = availableRoles[index];
+      let index = Math.floor(Math.random() * availableRoles.length);
+      let role = availableRoles[index];
 
-        // If healer already assigned, skip any other healer
-        if (roleCategories[role] === "Healer" && healerAssigned) {
-          // find first non-healer role
-          const nonHealerIndex = availableRoles.findIndex(r => roleCategories[r] !== "Healer");
-          if (nonHealerIndex !== -1) {
-            index = nonHealerIndex;
-            role = availableRoles[index];
-          }
+      if (roleCategories[role] === "Healer" && noDoubleHealer && healerAssigned) {
+        const nonHealerIndex = availableRoles.findIndex(r => roleCategories[r] !== "Healer");
+        if (nonHealerIndex !== -1) {
+          index = nonHealerIndex;
+          role = availableRoles[index];
         }
+      }
 
-        if (roleCategories[role] === "Healer") healerAssigned = true;
+      if (roleCategories[role] === "Healer") healerAssigned = true;
 
-        availableRoles.splice(index, 1); // remove assigned role
-        player.querySelector(".role").textContent = `(${role})`;
-      });
-    } else {
-      players.forEach(player => {
-        if (availableRoles.length === 0) return;
-        const index = Math.floor(Math.random() * availableRoles.length);
-        const role = availableRoles.splice(index, 1)[0];
-        player.querySelector(".role").textContent = `(${role})`;
-      });
-    }
+      availableRoles.splice(index, 1); // remove assigned
+      setRoleIcon(player, role);
+    });
   }
 }
 
@@ -583,6 +613,24 @@ function getCategoryPools() {
     pools[cat]++;
   });
   return pools; // e.g., { DPS: 6, Tank: 4, Healer: 3, Assassin: 2 }
+}
+
+// Function to set role icons
+function setRoleIcon(player, role) {
+  const roleSpan = player.querySelector(".role");
+  roleSpan.innerHTML = "";
+
+  const img = document.createElement("img");
+  img.src = roleIcons[role] || "";
+  img.alt = role;
+  img.title = role;
+  img.className = "role-icon";
+
+  const text = document.createElement("span");
+  text.textContent = role;
+
+  roleSpan.appendChild(img);
+  roleSpan.appendChild(text);
 }
 
 //_________________________ Help Button _____________________________________

@@ -1,3 +1,6 @@
+/* -----------------------------
+   Dropzones
+------------------------------ */
 .dropzone {
   min-height: 250px;
   display: flex;
@@ -24,6 +27,9 @@
   border-color: #e0a800;
 }
 
+/* -----------------------------
+   Tags
+------------------------------ */
 .tag {
   background-color: #ffffff;
   border: 1px solid #ccc;
@@ -31,7 +37,7 @@
   padding: 6px 10px;
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Name on left, buttons on right */
+  justify-content: space-between; /* Name/role left, buttons right */
   cursor: grab;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   transition: transform 0.1s, box-shadow 0.1s;
@@ -44,23 +50,40 @@
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
-/* Name + role container */
+/* Name + role container with grid for aligned icons */
 .drag-handle {
-  display: flex;
+  display: grid;
+  grid-template-columns: 150px auto; /* fixed name column, role+icon column */
   align-items: center;
+  gap: 10px; /* space between name and role */
 }
 
 .tag .name {
   font-weight: 500;
+  margin-right: 0; /* removed previous spacing */
 }
 
 .tag .role {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px; /* space between icon and role text */
   font-style: italic;
   color: #555;
-  margin-left: 8px; /* space between name and role */
+  font-size: 0.9em;
 }
 
-/* Container for lock + delete buttons */
+.role-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.role-text {
+  white-space: nowrap;
+}
+
+/* -----------------------------
+   Lock & Delete Buttons
+------------------------------ */
 .tag-actions {
   display: flex;
   align-items: center;
@@ -104,9 +127,17 @@
   user-select: none;
 }
 
-/* Remix Teams Button */
+/* Locked Tag Styling */
+.tag.locked {
+  opacity: 0.75;
+  border: 2px solid gold;
+}
+
+/* -----------------------------
+   Remix Teams Button
+------------------------------ */
 #remixTeamsBtn {
-  margin-top: 10px; /* Adds space above the button */
+  margin-top: 10px;
   padding: 6px 12px;
   cursor: pointer;
   border-radius: 4px;
@@ -120,7 +151,7 @@
 
 /* -----------------------------
    Header & Help Button
-------------------------------*/
+------------------------------ */
 .header {
   display: flex;
   align-items: center;
@@ -145,7 +176,7 @@
 
 /* -----------------------------
    Modal Overlay
-------------------------------*/
+------------------------------ */
 .modal {
   position: fixed;
   inset: 0;
@@ -154,33 +185,32 @@
   align-items: center;
   justify-content: center;
   z-index: 2000;
-  overflow: auto; /* allows scrolling if content is too tall */
+  overflow: auto;
 }
 
-/* Hide by default */
 .hidden {
   display: none;
 }
 
 /* -----------------------------
    Modal Box
-------------------------------*/
+------------------------------ */
 .modal-content {
   background: #1e1e1e;
   color: white;
   padding: 30px 35px;
-  width: 600px;             
-  max-width: 95%;           
-  max-height: 90vh;         
+  width: 600px;
+  max-width: 95%;
+  max-height: 90vh;
   border-radius: 8px;
   position: relative;
-  font-size: 20px;           /* larger text */
-  line-height: 1.8;          /* taller spacing */
-  overflow-y: auto;          /* scrollable if content too tall */
+  font-size: 20px;
+  line-height: 1.8;
+  overflow-y: auto;
 }
 
 .modal-content h2 {
-  font-size: 26px;           /* bigger header */
+  font-size: 26px;
   margin-bottom: 20px;
 }
 
@@ -246,9 +276,4 @@
   background: #666;
 }
 
-/* Locked Tag Styling */
-.tag.locked {
-  opacity: 0.75;
-  border: 2px solid gold;
-}
 
