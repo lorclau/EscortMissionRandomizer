@@ -114,14 +114,18 @@ function addPlayer() {
   const tag = document.createElement("div");
   tag.className = "tag";
   tag.draggable = true;
+  tag.dataset.locked = "false";
 
   tag.innerHTML = `
-    <span class="drag-handle">
-        <span class="name">${name}</span>
-        <span class="role"></span>
-    </span>
+  <span class="drag-handle">
+    <span class="name">${name}</span>
+    <span class="role"></span>
+  </span>
+  <span class="tag-actions">
+    <span class="lock-box" title="Lock player">🔓</span>
     <span class="delete-box">✖</span>
-  `;
+  </span>
+`;
 
   // Append to participants
   document.getElementById("participantsDrop").appendChild(tag);
@@ -130,8 +134,12 @@ function addPlayer() {
      DESKTOP DRAG
   -------------------------- */
   tag.addEventListener("dragstart", (e) => {
-    if (e.target.closest(".delete-box")) {
-      e.preventDefault(); // clicking delete does not start drag
+    if (tag.dataset.locked === "true") {
+      e.preventDefault();
+      return;
+    }
+    if (e.target.closest(".delete-box") || e.target.closest(".lock-box")) {
+      e.preventDefault();
       return;
     }
     draggedTag = tag;
@@ -141,16 +149,14 @@ function addPlayer() {
      MOBILE TOUCH DRAG
   -------------------------- */
   tag.addEventListener("touchstart", (e) => {
-  // If touching the delete button, do NOT start dragging
-    if (e.target.closest(".delete-box")) {
-      return; // allow normal tap -> click
-    }
+    if (tag.dataset.locked === "true") return;
+    if (e.target.closest(".delete-box") || e.target.closest(".lock-box")) return;
 
     draggedTag = tag;
     tag.classList.add("dragging");
     tag.style.zIndex = 1000;
 
-    e.preventDefault(); // prevent scrolling only when dragging
+    e.preventDefault();
   });
 
   tag.addEventListener("touchmove", (e) => {
@@ -169,22 +175,21 @@ function addPlayer() {
     if (!draggedTag) return;
     const touch = e.changedTouches[0];
 
-    // Temporarily hide dragged element so elementFromPoint detects underlying dropzone
     draggedTag.style.display = "none";
-    const dropZone = document.elementFromPoint(touch.clientX, touch.clientY)?.closest(".dropzone");
+    const dropZone = document
+      .elementFromPoint(touch.clientX, touch.clientY)
+      ?.closest(".dropzone");
     draggedTag.style.display = "";
 
     if (dropZone) {
       dropZone.appendChild(draggedTag);
 
-      // Optional: clear role if dropped in participants
       if (dropZone.id === "participantsDrop") {
         const roleSpan = draggedTag.querySelector(".role");
         if (roleSpan) roleSpan.textContent = "";
       }
     }
 
-    // Reset styles
     draggedTag.style.position = "";
     draggedTag.style.left = "";
     draggedTag.style.top = "";
@@ -194,11 +199,25 @@ function addPlayer() {
   });
 
   /* -------------------------
+     LOCK BUTTON
+  -------------------------- */
+  const lockBox = tag.querySelector(".lock-box");
+  lockBox.addEventListener("click", (e) => {
+    e.stopPropagation();
+
+    const locked = tag.dataset.locked === "true";
+    tag.dataset.locked = (!locked).toString();
+
+    lockBox.textContent = locked ? "🔓" : "🔒";
+    tag.classList.toggle("locked", !locked);
+  });
+
+  /* -------------------------
      DELETE BUTTON
   -------------------------- */
   const deleteBox = tag.querySelector(".delete-box");
   deleteBox.addEventListener("click", (e) => {
-    e.stopPropagation(); // prevent drag
+    e.stopPropagation();
     tag.remove();
   });
 
@@ -406,7 +425,8 @@ function formatTeam(teamId, label) {
 
 function randomizeTeams() {
   const participantsDrop = document.getElementById("participantsDrop");
-  const participants = Array.from(participantsDrop.querySelectorAll(".tag"));
+  const participants = Array.from(
+  participantsDrop.querySelectorAll(".tag:not([data-locked='true'])"));
 
   if (participants.length === 0) return;
 
@@ -455,27 +475,55 @@ function remixTeams() {
   const attackersDrop = document.getElementById("attackersDrop");
   const defendersDrop = document.getElementById("defendersDrop");
 
-  // Collect all players currently in attackers and defenders
   const allPlayers = [
-    ...Array.from(attackersDrop.querySelectorAll(".tag")),
-    ...Array.from(defendersDrop.querySelectorAll(".tag"))
+    ...attackersDrop.querySelectorAll(".tag"),
+    ...defendersDrop.querySelectorAll(".tag")
   ];
 
   if (allPlayers.length === 0) return;
 
-  // Shuffle them
-  shuffleArray(allPlayers);
+  // Store original team BEFORE clearing DOM
+  const locked = [];
+  const unlocked = [];
 
-  // Clear current drop zones
+  allPlayers.forEach(player => {
+    const teamId = player.parentElement.id;
+
+    if (player.dataset.locked === "true") {
+      locked.push({ player, teamId });
+    } else {
+      unlocked.push(player);
+    }
+  });
+
+  shuffleArray(unlocked);
+
+  // Clear teams
   attackersDrop.innerHTML = "";
   defendersDrop.innerHTML = "";
 
-  // Reassign alternately to attackers and defenders
-  allPlayers.forEach((player, index) => {
-    if (index % 2 === 0) {
+  let aCount = 0;
+  let dCount = 0;
+
+  // Reinsert locked players to their original teams
+  locked.forEach(({ player, teamId }) => {
+    if (teamId === "attackersDrop") {
       attackersDrop.appendChild(player);
+      aCount++;
+    } else if (teamId === "defendersDrop") {
+      defendersDrop.appendChild(player);
+      dCount++;
+    }
+  });
+
+  // Distribute unlocked players
+  unlocked.forEach(player => {
+    if (aCount <= dCount) {
+      attackersDrop.appendChild(player);
+      aCount++;
     } else {
       defendersDrop.appendChild(player);
+      dCount++;
     }
   });
 }
@@ -488,15 +536,42 @@ function shuffleArray(array) {
   }
 }
 
+// Updated swap teams to swap unlocked players while preserving 4v4 teams
 function swapTeams() {
   const attackersDrop = document.getElementById("attackersDrop");
   const defendersDrop = document.getElementById("defendersDrop");
 
-  const attackerPlayers = Array.from(attackersDrop.querySelectorAll(".tag"));
-  const defenderPlayers = Array.from(defendersDrop.querySelectorAll(".tag"));
+  const attackers = Array.from(attackersDrop.querySelectorAll(".tag"));
+  const defenders = Array.from(defendersDrop.querySelectorAll(".tag"));
 
-  attackerPlayers.forEach(player => defendersDrop.appendChild(player));
-  defenderPlayers.forEach(player => attackersDrop.appendChild(player));
+  // Separate locked/unlocked
+  const lockedAttackers = attackers.filter(p => p.dataset.locked === "true");
+  const unlockedAttackers = attackers.filter(p => p.dataset.locked !== "true");
+
+  const lockedDefenders = defenders.filter(p => p.dataset.locked === "true");
+  const unlockedDefenders = defenders.filter(p => p.dataset.locked !== "true");
+
+  // Determine how many unlocked players can actually swap
+  const swapCount = Math.min(unlockedAttackers.length, unlockedDefenders.length);
+
+  // Randomly pick players to swap if there are more than swapCount
+  shuffleArray(unlockedAttackers);
+  shuffleArray(unlockedDefenders);
+
+  const attackersToSwap = unlockedAttackers.slice(0, swapCount);
+  const defendersToSwap = unlockedDefenders.slice(0, swapCount);
+
+  // Remaining unlocked players that stay
+  const attackersRemain = unlockedAttackers.slice(swapCount);
+  const defendersRemain = unlockedDefenders.slice(swapCount);
+
+  // Clear current teams
+  attackersDrop.innerHTML = "";
+  defendersDrop.innerHTML = "";
+
+  // Rebuild teams
+  [...lockedAttackers, ...attackersRemain, ...defendersToSwap].forEach(p => attackersDrop.appendChild(p));
+  [...lockedDefenders, ...defendersRemain, ...attackersToSwap].forEach(p => defendersDrop.appendChild(p));
 }
 
 // function to get the number of roles in each category, that way it can't assign 3 tanks to a team if there are only 2 total in-game

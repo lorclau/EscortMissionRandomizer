@@ -31,7 +31,7 @@
   padding: 6px 10px;
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* left-align name+role */
+  justify-content: space-between; /* Name on left, buttons on right */
   cursor: grab;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   transition: transform 0.1s, box-shadow 0.1s;
@@ -44,38 +44,54 @@
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
-/* Name text */
+/* Name + role container */
+.drag-handle {
+  display: flex;
+  align-items: center;
+}
+
 .tag .name {
   font-weight: 500;
 }
 
-.tag.dragging {
-  opacity: 0.8;       /* Slightly transparent while dragging */
-  z-index: 1000;       /* On top of other tags */
-  box-shadow: 0 6px 12px rgba(0,0,0,0.2); /* stronger shadow */
-}
-
-/* Role text - closer to name */
 .tag .role {
   font-style: italic;
   color: #555;
   margin-left: 8px; /* space between name and role */
 }
 
+/* Container for lock + delete buttons */
+.tag-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;       /* space between lock and delete */
+}
+
+.tag .lock-box,
 .tag .delete-box {
-  margin-left: auto;       
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;            /* bigger clickable area */
-  height: 32px;           /* bigger clickable area */
-  padding: 4px;           /* extra space inside */
+  width: 28px;
+  height: 28px;
+  padding: 4px;
   border-radius: 6px;
   cursor: pointer;
-  background-color: #ffe6e6; 
   transition: background-color 0.2s, transform 0.1s;
 }
 
+/* Lock button styling */
+.tag .lock-box {
+  background-color: #fff7e6;
+}
+.tag .lock-box:hover {
+  background-color: #ffe699;
+}
+
+/* Delete button styling */
+.tag .delete-box {
+  background-color: #ffe6e6;
+}
 .tag .delete-box:hover {
   background-color: #ffcccc;
   transform: scale(1.1);  /* subtle hover grow */
@@ -88,6 +104,7 @@
   user-select: none;
 }
 
+/* Remix Teams Button */
 #remixTeamsBtn {
   margin-top: 10px; /* Adds space above the button */
   padding: 6px 12px;
@@ -97,7 +114,6 @@
   background-color: #f0f8ff;
   transition: background-color 0.2s;
 }
-
 #remixTeamsBtn:hover {
   background-color: #d0ebff;
 }
@@ -123,7 +139,6 @@
   line-height: 1;
   font-size: 14px;
 }
-
 .help-btn:hover {
   background: #777;
 }
@@ -164,13 +179,11 @@
   overflow-y: auto;          /* scrollable if content too tall */
 }
 
-/* Modal header */
 .modal-content h2 {
   font-size: 26px;           /* bigger header */
   margin-bottom: 20px;
 }
 
-/* Close button */
 .modal-close {
   position: absolute;
   top: 8px;
@@ -182,44 +195,35 @@
   cursor: pointer;
 }
 
-/* -----------------------------
-   Instructions List & Paragraphs
-------------------------------*/
+/* Instructions List & Paragraphs */
 .instructions-list li {
-  margin-bottom: 16px;       /* spacing between items */
+  margin-bottom: 16px;
   line-height: 1.8;
 }
-
 .instructions-list b {
-  font-weight: 600;           /* bold for button names */
+  font-weight: 600;
 }
-
 .modal-content p {
   margin-top: 16px;
   margin-bottom: 16px;
 }
 
-/* -----------------------------
-   Responsive: Mobile Devices
-------------------------------*/
+/* Responsive: Mobile Devices */
 @media (max-width: 600px) {
   .modal-content {
-    width: 90%;              /* almost full screen on mobile */
-    padding: 20px;           /* smaller padding for mobile */
-    font-size: 18px;         /* slightly smaller text for small screens */
+    width: 90%;
+    padding: 20px;
+    font-size: 18px;
     line-height: 1.6;
   }
-
   .modal-content h2 {
     font-size: 22px;
     margin-bottom: 16px;
   }
-
   .instructions-list li {
     margin-bottom: 14px;
     line-height: 1.6;
   }
-
   .help-btn {
     width: 24px;
     height: 24px;
@@ -230,7 +234,7 @@
 /* Instruction buttons inside modal */
 .instr-btn {
   display: inline-block;
-  background: #444;           /* dark button background */
+  background: #444;
   color: #fff;
   padding: 4px 8px;
   margin: 0 2px;
@@ -238,8 +242,13 @@
   font-weight: 600;
   font-size: 0.95em;
 }
-
 .instr-btn:hover {
-  background: #666;           /* highlight on hover */
+  background: #666;
+}
+
+/* Locked Tag Styling */
+.tag.locked {
+  opacity: 0.75;
+  border: 2px solid gold;
 }
 
