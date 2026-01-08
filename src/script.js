@@ -616,7 +616,8 @@ function getCategoryPools() {
   return pools; // e.g., { DPS: 6, Tank: 4, Healer: 3, Assassin: 2 }
 }
 
-// Function to set role icons
+// Function to set role icons (custom images)
+/*
 function setRoleIcon(player, role) {
   const roleSpan = player.querySelector(".role");
   roleSpan.innerHTML = "";
@@ -631,6 +632,44 @@ function setRoleIcon(player, role) {
   text.textContent = role;
 
   roleSpan.appendChild(img);
+  roleSpan.appendChild(text);
+}
+*/
+
+// Set role icons (temporary color cards)
+function setRoleIcon(player, role) {
+  const roleSpan = player.querySelector(".role");
+  roleSpan.innerHTML = "";
+
+  // Define colors per category
+  const categoryColors = {
+    "DPS": "#a1424c",      // red
+    "Tank": "#3f5e7b",     // blue
+    "Healer": "#446a62",   // green
+    "Assassin": "#6a588c"  // purple
+  };
+
+  // Determine the category for this role
+  // If role is already a category, use it directly
+  const category = roleCategories[role] || role; 
+  const color = categoryColors[category] || "#95a5a6"; // fallback gray
+
+  // Create colored box
+  const box = document.createElement("span");
+  box.style.display = "inline-block";
+  box.style.width = "20px";
+  box.style.height = "20px";
+  box.style.backgroundColor = color;
+  box.style.marginRight = "5px";
+  box.style.verticalAlign = "middle";
+  box.style.borderRadius = "3px"; // optional rounded corners
+  box.title = role; // hover text
+
+  // Create text label
+  const text = document.createElement("span");
+  text.textContent = role;
+
+  roleSpan.appendChild(box);
   roleSpan.appendChild(text);
 }
 
