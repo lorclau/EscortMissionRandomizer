@@ -287,25 +287,25 @@ function assignRoles() {
   const identicalTeams = document.getElementById("identicalTeamsCheckbox").checked;
 
   if (identicalTeams) {
-    // Assign roles to attackers first
-    const attackers = Array.from(document.getElementById("attackersDrop").querySelectorAll(".tag"));
-    const rolesAssigned = assignRolesToPlayers(attackers);
+  // Assign roles to attackers first
+  const attackers = Array.from(document.getElementById("attackersDrop").querySelectorAll(".tag"));
+  const rolesAssigned = assignRolesToPlayers(attackers);
 
-    // Assign the same roles/categories to defenders
-    const defenders = Array.from(document.getElementById("defendersDrop").querySelectorAll(".tag"));
-    // Shuffle roles so defenders don’t get exact same order
-    const rolesCopy = [...rolesAssigned];
-    shuffleArray(rolesCopy);
+  // Assign the same roles/categories to defenders
+  const defenders = Array.from(document.getElementById("defendersDrop").querySelectorAll(".tag"));
+  // Shuffle roles so defenders don’t get exact same order
+  const rolesCopy = [...rolesAssigned];
+  shuffleArray(rolesCopy);
 
-    defenders.forEach((player, index) => {
-      player.querySelector(".role").textContent = rolesCopy[index] || "";
-    });
-
-  } else {
-    // Normal assignment
-    assignTeam("attackers");
-    assignTeam("defenders");
-  }
+  defenders.forEach((player, index) => {
+    const role = rolesCopy[index] || "";
+    setRoleIcon(player, role);  // Use setRoleIcon
+  });
+} else {
+  // Normal assignment
+  assignTeam("attackers");
+  assignTeam("defenders");
+}
 }
 
 // Helper function to assign roles to list of players (for assign roles)
