@@ -503,6 +503,8 @@ function randomizeTeams() {
 }
 
 function remixTeams() {
+  const MAX_TEAM_SIZE = 4;
+
   const attackersDrop = document.getElementById("attackersDrop");
   const defendersDrop = document.getElementById("defendersDrop");
 
@@ -513,13 +515,11 @@ function remixTeams() {
 
   if (allPlayers.length === 0) return;
 
-  // Store original team BEFORE clearing DOM
   const locked = [];
   const unlocked = [];
 
   allPlayers.forEach(player => {
     const teamId = player.parentElement.id;
-
     if (player.dataset.locked === "true") {
       locked.push({ player, teamId });
     } else {
@@ -527,6 +527,7 @@ function remixTeams() {
     }
   });
 
+  // Shuffle unlocked players
   shuffleArray(unlocked);
 
   // Clear teams
@@ -536,7 +537,7 @@ function remixTeams() {
   let aCount = 0;
   let dCount = 0;
 
-  // Reinsert locked players to their original teams
+  // Reinsert locked players first
   locked.forEach(({ player, teamId }) => {
     if (teamId === "attackersDrop") {
       attackersDrop.appendChild(player);
@@ -547,15 +548,28 @@ function remixTeams() {
     }
   });
 
-  // Distribute unlocked players
+  // Randomly assign unlocked players without exceeding MAX_TEAM_SIZE
   unlocked.forEach(player => {
-    if (aCount <= dCount) {
+    const attackersFull = aCount >= MAX_TEAM_SIZE;
+    const defendersFull = dCount >= MAX_TEAM_SIZE;
+
+    if (!attackersFull && !defendersFull) {
+      // Randomly choose a team
+      if (Math.random() < 0.5) {
+        attackersDrop.appendChild(player);
+        aCount++;
+      } else {
+        defendersDrop.appendChild(player);
+        dCount++;
+      }
+    } else if (!attackersFull) {
       attackersDrop.appendChild(player);
       aCount++;
-    } else {
+    } else if (!defendersFull) {
       defendersDrop.appendChild(player);
       dCount++;
     }
+    // If both are full, the player is skipped (optional: you could alert)
   });
 }
 
@@ -569,6 +583,8 @@ function shuffleArray(array) {
 
 // Updated swap teams to swap unlocked players while preserving 4v4 teams
 function swapTeams() {
+  const MAX_TEAM_SIZE = 4;
+
   const attackersDrop = document.getElementById("attackersDrop");
   const defendersDrop = document.getElementById("defendersDrop");
 
@@ -582,21 +598,22 @@ function swapTeams() {
   const lockedDefenders = defenders.filter(p => p.dataset.locked === "true");
   const unlockedDefenders = defenders.filter(p => p.dataset.locked !== "true");
 
-  // Determine how many unlocked players can actually swap
-  const swapCount = Math.min(unlockedAttackers.length, unlockedDefenders.length);
-
-  // Randomly pick players to swap if there are more than swapCount
+  // Shuffle unlocked players to randomize which ones will swap if necessary
   shuffleArray(unlockedAttackers);
   shuffleArray(unlockedDefenders);
 
-  const attackersToSwap = unlockedAttackers.slice(0, swapCount);
-  const defendersToSwap = unlockedDefenders.slice(0, swapCount);
+  // Calculate how many unlocked players **can actually be swapped**
+  const availableForAttackers = MAX_TEAM_SIZE - lockedAttackers.length;
+  const availableForDefenders = MAX_TEAM_SIZE - lockedDefenders.length;
 
-  // Remaining unlocked players that stay
-  const attackersRemain = unlockedAttackers.slice(swapCount);
-  const defendersRemain = unlockedDefenders.slice(swapCount);
+  const attackersToSwap = unlockedAttackers.slice(0, availableForDefenders);
+  const defendersToSwap = unlockedDefenders.slice(0, availableForAttackers);
 
-  // Clear current teams
+  // Remaining unlocked players stay in their original team
+  const attackersRemain = unlockedAttackers.slice(attackersToSwap.length);
+  const defendersRemain = unlockedDefenders.slice(defendersToSwap.length);
+
+  // Clear teams
   attackersDrop.innerHTML = "";
   defendersDrop.innerHTML = "";
 
