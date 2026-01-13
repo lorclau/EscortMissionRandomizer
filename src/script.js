@@ -730,3 +730,22 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+//__________________ Options Dropdown _____________________
+
+const optionsToggleBtn = document.getElementById("optionsToggleBtn");
+const optionsDropdown = document.getElementById("optionsDropdown");
+
+optionsToggleBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  optionsDropdown.classList.toggle("hidden");
+});
+
+optionsDropdown.addEventListener("click", (e) => {
+  e.stopPropagation(); // allow multi-select
+});
+
+document.addEventListener("click", () => {
+  optionsDropdown.classList.add("hidden");
+});
+
+

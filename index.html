@@ -12,37 +12,48 @@
   <!-- Help Button -->
   <button id="helpBtn" class="help-btn" title="Instructions">?</button>
   </div>
-
+  
   <div class="controls">
-    <input
-      type="text"
-      id="playerInput"
-      placeholder="Enter player name"
-    />
-    <button id="addPlayerBtn">Add Player</button>
-    <button id="randomizeTeamsBtn">Randomize Participants</button>
-    <button id="swapTeamsBtn">Swap Teams</button>
-    <button id="assignRolesBtn">Assign Roles</button>
-    <button id="copyBtn">Copy</button>
+  <input
+    type="text"
+    id="playerInput"
+    placeholder="Enter player name"
+  />
+  <button id="addPlayerBtn">Add Player</button>
+  <button id="randomizeTeamsBtn">Randomize Participants</button>
+  <button id="swapTeamsBtn">Swap Teams</button>
+  <button id="assignRolesBtn">Assign Roles</button>
+  <button id="copyBtn">Copy</button>
 
-    <label>
-      <input type="checkbox" id="categoryOnlyCheckbox">
-      Assign Categories Only (ex: Healer, DPS, Tank, Assassin)
-    </label>
-    <label>
-      <input type="checkbox" id="noDoubleHealerCheckbox">
-      No Double Healer
-    </label>
-    <label>
-      <input type="checkbox" id="noForgeCheckbox">
-      No Forge (DPS)
-    </label>
-    <label>
-      <input type="checkbox" id="identicalTeamsCheckbox" />
-      Identical Team Comp
-    </label>
+  <!-- OPTIONS DROPDOWN -->
+  <div class="options-wrapper">
+    <button id="optionsToggleBtn" class="options-toggle">
+      Options ▾
+    </button>
 
+    <div id="optionsDropdown" class="options-dropdown hidden">
+      <label>
+        <input type="checkbox" id="categoryOnlyCheckbox">
+        Assign Categories Only
+      </label>
+
+      <label>
+        <input type="checkbox" id="noDoubleHealerCheckbox">
+        No Double Healer
+      </label>
+
+      <label>
+        <input type="checkbox" id="noForgeCheckbox">
+        No Forge (DPS)
+      </label>
+
+      <label>
+        <input type="checkbox" id="identicalTeamsCheckbox">
+        Identical Team Comp
+      </label>
+    </div>
   </div>
+</div>
 
   <div class="container">
   <div class="column" id="participants">
@@ -85,6 +96,7 @@
     <ul class="instructions-list">
       <li><span class="instr-btn">Assign Categories Only</span> – Assigns only the category (DPS, Healer, Tank, Assassin) instead of specific roles.</li>
       <li><span class="instr-btn">No Double Healer</span> – Prevents more than one Healer per team.</li>
+      <li><span class="instr-btn">No Forge (DPS)</span> – The DPS role of "Forge" will not be assigned to any players.</li>
       <li><span class="instr-btn">Identical Team Comp</span> – Makes both teams have the same role composition.</li>
     </ul>
 
