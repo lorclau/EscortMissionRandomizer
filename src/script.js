@@ -26,7 +26,7 @@ const roleCategories = {
   "Scorcher": "DPS",
   "Guardian": "Tank",
   "Rimefist": "Tank",
-  "Flamefist": "Tank",
+  "Flamefist": "DPS",
   "Gaia": "Tank",
   "Luminra": "Healer",
   "Reso": "Healer",
@@ -338,7 +338,7 @@ function assignRolesToPlayers(players) {
     });
 
   } else {
-    let availableRoles = [...Object.keys(roleCategories)];
+    let availableRoles = getAvailableRoles();
     let healerAssigned = false;
 
     players.forEach(player => {
@@ -364,6 +364,16 @@ function assignRolesToPlayers(players) {
   }
 
   return assignedRoles;
+}
+
+// Helper function to get available roles (forge-awareness for no forge option)
+function getAvailableRoles() {
+  const noForge = document.getElementById("noForgeCheckbox")?.checked;
+
+  return Object.keys(roleCategories).filter(role => {
+    if (noForge && role === "Forge") return false;
+    return true;
+  });
 }
 
 function assignTeam(teamId) {
@@ -395,7 +405,7 @@ function assignTeam(teamId) {
     });
 
   } else {
-    let availableRoles = [...Object.keys(roleCategories)];
+    let availableRoles = getAvailableRoles();
     let healerAssigned = false;
 
     players.forEach(player => {
