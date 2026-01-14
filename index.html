@@ -23,10 +23,6 @@
   <button id="randomizeTeamsBtn">Randomize Participants</button>
   <button id="swapTeamsBtn">Swap Teams</button>
   <button id="assignRolesBtn">Assign Roles</button>
-  <button id="copyBtn">Copy ALL</button>
-
-  <button id="copyAttackersBtn">Copy A</button>
-  <button id="copyDefendersBtn">Copy D</button>
 
   <!-- OPTIONS DROPDOWN -->
   <div class="options-wrapper">
@@ -56,7 +52,7 @@
       </label>
     </div>
   </div>
-</div>
+ </div>
 
   <div class="container">
   <div class="column" id="participants">
@@ -72,7 +68,15 @@
   <div class="column" id="defenders">
     <h3>Defenders</h3>
     <div class="dropzone" id="defendersDrop"></div>
-    <button id="remixTeamsBtn">Remix Teams</button>
+    <div class="remix-copy-bar">
+  <button id="remixTeamsBtn" class="primary-btn">Remix Teams</button>
+
+    <div class="copy-buttons">
+      <button id="copyAttackersBtn" class="copy-btn">Copy A</button>
+      <button id="copyDefendersBtn" class="copy-btn">Copy D</button>
+      <button id="copyBtn" class="copy-btn">Copy ALL</button>
+    </div>
+  </div>
   </div>
 </div>
 
