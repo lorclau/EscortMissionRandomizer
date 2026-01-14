@@ -35,6 +35,31 @@ const roleCategories = {
   "Vaporix": "Assassin"
 };
 
+// nicknames for roles and categories (to shorten characters needed for copy)
+const roleNicknames = {
+  Deadeye: "dead",
+  Taylor: "tay",
+  Forge: "forge",
+  Aeroblade: "aero",
+  Ravage: "rav",
+  Scorcher: "scorch",
+  Guardian: "guard",
+  Rimefist: "rime",
+  Flamefist: "flame",
+  Gaia: "gaia",
+  Luminra: "lumin",
+  Reso: "reso",
+  Sylora: "sylo",
+  Razorstrike: "razor",
+  Vaporix: "vapo",
+
+  // Optional: category-only modes
+  DPS: "dps",
+  Tank: "tank",
+  Healer: "heal",
+  Assassin: "assn"
+};
+
 // Role icons
 const roleIcons = {
   "Deadeye": "icons/dps.png",
@@ -89,7 +114,11 @@ const roleIcons = {
 const input = document.getElementById("playerInput");
 const addBtn = document.getElementById("addPlayerBtn");
 const assignBtn = document.getElementById("assignRolesBtn");
+
 const copyBtn = document.getElementById("copyBtn");
+const copyAttackersBtn = document.getElementById("copyAttackersBtn");
+const copyDefendersBtn = document.getElementById("copyDefendersBtn");
+
 const randomizeBtn = document.getElementById("randomizeTeamsBtn");
 const swapBtn = document.getElementById("swapTeamsBtn");
 const remixBtn = document.getElementById("remixTeamsBtn");
@@ -109,8 +138,12 @@ swapBtn.addEventListener("click", swapTeams);
 // Randomize teams
 randomizeBtn.addEventListener("click", randomizeTeams);
 
-// Copy names and roles to clipboard
+// Copy all names and roles to clipboard
 copyBtn.addEventListener("click", copyToClipboard);
+
+// Copy names and roles (A and D seperately)
+copyAttackersBtn.addEventListener("click", () => copyTeamOnly("attackers", "A"));
+copyDefendersBtn.addEventListener("click", () => copyTeamOnly("defenders", "D"));
 
 // Add player on button click
 addBtn.addEventListener("click", addPlayer);
@@ -430,11 +463,13 @@ function assignTeam(teamId) {
   }
 }
 
+//helper to copy all names/roles
 function copyToClipboard() {
   const attackers = formatTeam("attackers", "A");
   const defenders = formatTeam("defenders", "D");
 
-  const output = `${attackers} | ${defenders}`;
+  // NO SPACES
+  const output = `${attackers}|${defenders}`;
 
   navigator.clipboard.writeText(output)
     .then(() => {
@@ -445,23 +480,40 @@ function copyToClipboard() {
     });
 }
 
+//helper to copy A and D roles/names seperately
+function copyTeamOnly(teamId, label) {
+  const output = formatTeam(teamId, label);
+
+  navigator.clipboard.writeText(output)
+    .then(() => {
+      alert(`Copied ${label} to clipboard!`);
+    })
+    .catch(err => {
+      console.error("Copy failed:", err);
+    });
+}
+
 function formatTeam(teamId, label) {
   const team = document.getElementById(teamId + "Drop");
   const players = Array.from(team.querySelectorAll(".tag"));
-  const categoryOnly = document.getElementById("categoryOnlyCheckbox").checked;
 
   const formatted = players.map(player => {
     const name = player.querySelector(".name")?.textContent ?? "";
     let roleText = player.querySelector(".role")?.textContent.trim() ?? "";
 
-    if (!roleText) return name;
-
+    // Clean role text
     roleText = roleText.replace(/[()]/g, "");
 
-    return `${name} - ${roleText}`;
+    // Convert to nickname if available
+    const roleNick = roleNicknames[roleText] ?? roleText;
+
+    // If no role, output name only
+    if (!roleText) return name;
+
+    return `${name}-${roleNick}`;
   });
 
-  return `${label}: ${formatted.join(", ")}`;
+  return `${label}:${formatted.join(",")}`;
 }
 
 function randomizeTeams() {
