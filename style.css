@@ -354,4 +354,15 @@
   display: none;
 }
 
+/* Instructions secondary spacing */
+.inner-list {
+  margin-left: 20px;      /* Indent from the main list item */
+  margin-top: 4px;        /* Small spacing above */
+  margin-bottom: 4px;     /* Small spacing below */
+}
+
+.inner-list div {
+  margin-bottom: 2px;     /* Spacing between each copy option */
+}
+
 
