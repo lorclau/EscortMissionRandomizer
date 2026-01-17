@@ -13,7 +13,8 @@ const roles = [
   "Reso",
   "Sylora",
   "Razorstrike",
-  "Vaporix"
+  "Vaporix",
+  "Paladin"   //new role 1/16/26
 ];
 
 //categories (can add specifics later like ranged dps)
@@ -31,6 +32,7 @@ const roleCategories = {
   "Luminra": "Healer",
   "Reso": "Healer",
   "Sylora": "Healer",
+  "Paladin": "Healer",
   "Razorstrike": "Assassin",
   "Vaporix": "Assassin"
 };
@@ -52,6 +54,7 @@ const roleNicknames = {
   Sylora: "sylo",
   Razorstrike: "razor",
   Vaporix: "vapo",
+  Paladin: "Palad",
 
   // Optional: category-only modes
   DPS: "dps",
@@ -77,6 +80,7 @@ const roleIcons = {
   "Sylora": "icons/healer.png",
   "Razorstrike": "icons/assassin.png",
   "Vaporix": "icons/assassin.png",
+  "Paladin": "icons/healer.png",
 
   // Optional: category icons
   "DPS": "icons/dps.png",
@@ -399,12 +403,14 @@ function assignRolesToPlayers(players) {
   return assignedRoles;
 }
 
-// Helper function to get available roles (forge-awareness for no forge option)
+// Helper function to get available roles (checks for no-forge and no-paladin)
 function getAvailableRoles() {
   const noForge = document.getElementById("noForgeCheckbox")?.checked;
+  const noPaladin = document.getElementById("noPaladinCheckbox")?.checked;
 
   return Object.keys(roleCategories).filter(role => {
     if (noForge && role === "Forge") return false;
+    if (noPaladin && role === "Paladin") return false;
     return true;
   });
 }
@@ -685,14 +691,23 @@ function swapTeams() {
 }
 
 // function to get the number of roles in each category, that way it can't assign 3 tanks to a team if there are only 2 total in-game
+// respecting "no forge" and "no paladin" options
 function getCategoryPools() {
-  // Count how many roles exist per category
+  const noForge = document.getElementById("noForgeCheckbox")?.checked;
+  const noPaladin = document.getElementById("noPaladinCheckbox")?.checked;
+
   const pools = {};
-  Object.values(roleCategories).forEach(cat => {
-    if (!pools[cat]) pools[cat] = 0;
-    pools[cat]++;
+
+  Object.entries(roleCategories).forEach(([role, category]) => {
+    // Skip disabled roles
+    if (noForge && role === "Forge") return;
+    if (noPaladin && role === "Paladin") return;
+
+    if (!pools[category]) pools[category] = 0;
+    pools[category]++;
   });
-  return pools; // e.g., { DPS: 6, Tank: 4, Healer: 3, Assassin: 2 }
+
+  return pools; // e.g., { DPS: 6 (7), Tank: 4, Healer: 3 (4), Assassin: 2 }
 }
 
 // Function to set role icons (custom images)
