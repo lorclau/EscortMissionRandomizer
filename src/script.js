@@ -43,7 +43,7 @@ const roleNicknames = {
   Taylor: "tay",
   Forge: "forge",
   Aeroblade: "aero",
-  Ravage: "rav",
+  Ravage: "ravag",
   Scorcher: "scorch",
   Guardian: "guard",
   Rimefist: "rime",
@@ -54,7 +54,7 @@ const roleNicknames = {
   Sylora: "sylo",
   Razorstrike: "razor",
   Vaporix: "vapo",
-  Paladin: "Palad",
+  Paladin: "palad",
 
   // Optional: category-only modes
   DPS: "dps",
