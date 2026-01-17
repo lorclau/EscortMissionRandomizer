@@ -7,19 +7,21 @@ Type particpants names, press enter or "add" to add them to the participants lis
 Drag-and-drop to reorganize particpants. Click assign roles to assign roles to the players in attackers/defenders.
 
 ### Buttons
-**Randomize participants** - place all participants into random teams (attackers or defenders)
+**Randomize participants** - place all participants into random teams (either Attackers or Defenders).
 
-**Remix teams** - only randomize players who are already in teams
+**Remix teams** - only randomize players who are already in teams.
 
-**Swap teams** - swaps attackers and defenders
+**Swap teams** - swaps attackers and defenders.
 
-**Assign roles** - assigns random in-game roles to each player
+**Assign roles** - assigns random in-game roles to each player.
 
-**Copy** - copies the outcome of the randomization to your clipboard for easy pasting into single text areas
+**Copy** - copy the outcome of the randomization to your clipboard with the option to copy Attackers and Defenders seperately.
 
 ### Additional Options
 **Assign Categories Only** - will assign each player a category (healer, tank, dps, or assassin). Players can decide in-game which specific role they want to play, so long as it is in the category they recieved.
 
 **No double healer** - each team will be assigned no more than one healer. This is to prevent unfair gameplay and provide more control over the randomization.
+
+**No Forge / No Paladin** - excludes specific roles from the randomization. Offering more control and customization for ranked/non-ranked matches.
 
 **Identical Team Comp** - will assign the same roles/categories to attackers and defenders. This means both teams will play with the same team comp.
