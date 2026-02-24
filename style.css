@@ -365,4 +365,37 @@
   margin-bottom: 2px;     /* Spacing between each copy option */
 }
 
+/* footer section */
+.footer-divider {
+  margin-top: 40px;
+  margin-bottom: 20px;
+  border-color: #ccc;
+}
+
+.app-footer {
+  font-size: 0.85rem;
+  color: #666;
+  text-align: center;
+  line-height: 1.5;
+  max-width: 800px;
+  margin: 0 auto 40px auto;
+  padding: 0 20px;
+}
+
+.footer-list {
+  list-style-type: disc;
+  padding-left: 20px;
+  text-align: left;
+  display: inline-block;
+  margin: 10px 0;
+}
+
+.app-footer a {
+  color: #666;
+  text-decoration: underline;
+}
+
+.app-footer a:hover {
+  color: #333;
+}
 
